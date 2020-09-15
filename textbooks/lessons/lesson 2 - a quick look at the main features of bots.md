@@ -53,4 +53,64 @@ bot.text_contains_filter("+") # Проверяет сообщение на пр�
 
 # Api Vk
 
+Для работы с Api Vk необходимо получить событие.
+Давйте приведём пример:
+```python
+from vkwave.bots import SimpleLongPollBot
+
+bot = SimpleLongPollBot(tokens="MyToken", group_id=123456789)
+
+@bot.message_handler(bot.text_contains_filter("начало"))
+def handle(event: bot.SimpleBotEvent) -> str:
+    user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.peer_id)).response[0] # обращаемся к апи
+    await event.answer(message=f"Привет, {user_data.first_name}") # отправляем сообщение
+
+bot.run_forever()
+```
+
+В данном примере, был использован метод vk api - users.get, вы же можете использовать любые методы [отсюда](https://vk.com/dev/methods)
+
 # Клавиатуры
+
+В Вк Апи есть клавиатуры, для удобства в vkwave встроен генератор клавиатур
+
+Для начала импортируем всё необходимое:
+
+```python
+from vkwave.bots.utils.keyboards import Keyboard
+from vkwave.bots.utils.keyboards.keyboard import ButtonColor
+```
+
+Затем, "зарегистрируем" клавиатуру:
+
+```python
+kb = Keyboard(one_time=True)
+# kb = Keyboard(one_time=False, inline=True) # Inline клавиатура
+```
+
+Далее, добавим кнопки:
+```python
+kb.add_text_button("blue hello", color=ButtonColor.PRIMARY)
+
+kb.add_row()
+kb.add_text_button("white hello", color=ButtonColor.SECONDARY)
+```
+И затем надо отправить сообщение с клавиатурой. Давайте расмотрим готовый код:
+
+```python
+from vkwave.bots.utils.keyboards import Keyboard
+from vkwave.bots.utils.keyboards.keyboard import ButtonColor
+from vkwave.bots import SimpleLongPollBot
+
+bot = SimpleLongPollBot(tokens="MyToken", group_id=123456789)
+
+@bot.message_handler(bot.text_contains_filter("начало"))
+def handle(event: bot.SimpleBotEvent) -> str:
+    kb = Keyboard(one_time=True)
+    kb.add_text_button("Тест кнопки!", color=ButtonColor.PRIMARY)
+
+    user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.peer_id)).response[0] # обращаемся к апи
+    await event.answer(message=f"Привет, {user_data.first_name}", keyboard=kb.get_keyboard()) # отправляем сообщение
+
+bot.run_forever()
+```
