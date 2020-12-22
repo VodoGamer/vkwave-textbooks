@@ -61,7 +61,7 @@ from vkwave.bots import SimpleLongPollBot
 bot = SimpleLongPollBot(tokens="MyToken", group_id=123456789)
 
 @bot.message_handler(bot.text_contains_filter("начало"))
-def handle(event: bot.SimpleBotEvent) -> str:
+async def handle(event: bot.SimpleBotEvent) -> str:
     user_data = (await event.api_ctx.users.get(user_ids=event.object.object.message.peer_id)).response[0] # обращаемся к апи
     await event.answer(message=f"Привет, {user_data.first_name}") # отправляем сообщение
 
@@ -105,7 +105,7 @@ from vkwave.bots import SimpleLongPollBot
 bot = SimpleLongPollBot(tokens="MyToken", group_id=123456789)
 
 @bot.message_handler(bot.text_contains_filter("начало"))
-def handle(event: bot.SimpleBotEvent) -> str:
+async def handle(event: bot.SimpleBotEvent) -> str:
     kb = Keyboard(one_time=True)
     kb.add_text_button("Тест кнопки!", color=ButtonColor.PRIMARY)
 
